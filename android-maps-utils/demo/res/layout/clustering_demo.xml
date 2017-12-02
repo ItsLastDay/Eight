@@ -31,6 +31,12 @@
             android:layout_height="match_parent"
             android:layout_width="match_parent">
 
+            <TextView android:id="@+id/selection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Choose smth"
+                android:textSize="26sp" />
+
             <ScrollView android:layout_height="match_parent"
                 android:layout_width="match_parent">
 

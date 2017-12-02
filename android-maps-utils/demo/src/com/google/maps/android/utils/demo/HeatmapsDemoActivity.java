@@ -43,15 +43,10 @@ import org.json.JSONObject;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-<<<<<<< HEAD
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-=======
-import java.util.HashMap;
-import java.util.List;
->>>>>>> b77b87bcc2beefa43a2e846ca686842fbf6ac5df
 import java.util.Scanner;
 import java.util.stream.Stream;
 
@@ -207,74 +202,6 @@ public class HeatmapsDemoActivity extends BaseDemoActivity {
         // intensity from, and the map to draw the heatmap on
         // radius, gradient and opacity not specified, so default are used
     }
-
-<<<<<<< HEAD
-=======
-    public void changeRadius(View view) {
-        if (mDefaultRadius) {
-            mProvider.setRadius(ALT_HEATMAP_RADIUS);
-        } else {
-            mProvider.setRadius(HeatmapTileProvider.DEFAULT_RADIUS);
-        }
-        mOverlay.clearTileCache();
-        mDefaultRadius = !mDefaultRadius;
-    }
-
-    public void changeGradient(View view) {
-        if (mDefaultGradient) {
-            mProvider.setGradient(ALT_HEATMAP_GRADIENT);
-        } else {
-            mProvider.setGradient(HeatmapTileProvider.DEFAULT_GRADIENT);
-        }
-        mOverlay.clearTileCache();
-        mDefaultGradient = !mDefaultGradient;
-    }
-
-    public void changeOpacity(View view) {
-        if (mDefaultOpacity) {
-            mProvider.setOpacity(ALT_HEATMAP_OPACITY);
-        } else {
-            mProvider.setOpacity(HeatmapTileProvider.DEFAULT_OPACITY);
-        }
-        mOverlay.clearTileCache();
-        mDefaultOpacity = !mDefaultOpacity;
-    }
-
-    // Dealing with spinner choices
-    public class SpinnerActivity implements AdapterView.OnItemSelectedListener {
-        public void onItemSelected(AdapterView<?> parent, View view,
-                                   int pos, long id) {
-            String dataset = parent.getItemAtPosition(pos).toString();
-
-            TextView attribution = ((TextView) findViewById(R.id.attribution));
-
-            // Check if need to instantiate (avoid setData etc twice)
-            if (mProvider == null) {
-                mProvider = new HeatmapTileProvider.Builder().weightedData(
-                        getListOnPos(pos)).build();
-                mOverlay = getMap().addTileOverlay(new TileOverlayOptions().tileProvider(mProvider));
-                // Render links
-                attribution.setMovementMethod(LinkMovementMethod.getInstance());
-            } else {
-                mProvider.setData(mLists.get(dataset).getData());
-                mOverlay.clearTileCache();
-            }
-            // Update attribution
-            attribution.setText(Html.fromHtml(String.format(getString(R.string.attrib_format),
-                    mLists.get(dataset).getUrl())));
-
-        }
-
-        public List<WeightedLatLng> getListOnPos(int pos) {
-            return Arrays.asList(new WeightedLatLng(new LatLng(60.0125, 29.7336), 5),
-                    new WeightedLatLng(new LatLng(60, 29.74), 6));
-        }
-
-        public void onNothingSelected(AdapterView<?> parent) {
-            // Another interface callback
-        }
-    }
->>>>>>> b77b87bcc2beefa43a2e846ca686842fbf6ac5df
 
         // Datasets from http://data.gov.au
     private ArrayList<LatLng> readItems(int resource) throws JSONException {
