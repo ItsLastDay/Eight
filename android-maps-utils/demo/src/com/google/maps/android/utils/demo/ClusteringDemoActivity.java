@@ -50,29 +50,29 @@ public class ClusteringDemoActivity extends BaseDemoActivity {
                     put(R.id.pub, Arrays.asList(R.id.pub_small, R.id.cafe, R.id.club, R.id.nightclub));            }
             }
     );
-    private static final Map<Integer, String> enumToJsonName = Collections.unmodifiableMap(
-            new HashMap<Integer, String>() {
+    private static final Map<Integer, Integer> enumToJsonName = Collections.unmodifiableMap(
+            new HashMap<Integer, Integer>() {
                 {
-                    put(R.id.bicycle_parking,  "sport0.json");
-                    put(R.id.bicycle_rental, "sport1.json");
-                    put(R.id.training, "sport2.json");
-                    put(R.id.boat_rental, "sport3.json");
-                    put(R.id.bank, "money0.json");
-                    put(R.id.bureau_de_change, "money1.json");
-                    put(R.id.payment_terminal, "money2.json");
-                    put(R.id.cinema, "wo0.json");
-                    put(R.id.spa, "wo1.json");
-                    put(R.id.pharmacy, "wo2.json");
-                    put(R.id.pub_small, "pub0.json");
-                    put(R.id.cafe, "pub1.json");
-                    put(R.id.club, "pub2.json");
-                    put(R.id.nightclub, "pub3.json");
-                    put(R.id.arts_centre, "child0.json");
-                    put(R.id.school, "child1.json");
-                    put(R.id.university, "child2.json");
-                    put(R.id.college, "child3.json");
-                    put(R.id.kindergarten, "child4.json");
-                    put(R.id.language_school, "child5.json");
+                    put(R.id.arts_centre, R.raw.child0);
+                    put(R.id.school, R.raw.child1);
+                    put(R.id.university, R.raw.child2);
+                    put(R.id.college, R.raw.child3);
+                    put(R.id.kindergarten, R.raw.child4);
+                    put(R.id.language_school, R.raw.child5);
+                    put(R.id.bank, R.raw.money0);
+                    put(R.id.bureau_de_change, R.raw.money1);
+                    put(R.id.payment_terminal, R.raw.money2);
+                    put(R.id.cinema, R.raw.wo0);
+                    put(R.id.spa, R.raw.wo1);
+                    put(R.id.pharmacy, R.raw.wo2);
+                    put(R.id.bicycle_parking, R.raw.sport0);
+                    put(R.id.bicycle_rental, R.raw.sport1);
+                    put(R.id.training, R.raw.sport2);
+                    put(R.id.boat_rental, R.raw.sport3);
+                    put(R.id.pub_small, R.raw.pub0);
+                    put(R.id.cafe, R.raw.pub1);
+                    put(R.id.club, R.raw.pub2);
+                    put(R.id.nightclub, R.raw.pub3);
                 }
             });
     private static final int totalClasses;
@@ -147,7 +147,7 @@ public class ClusteringDemoActivity extends BaseDemoActivity {
 
     @Override
     protected void startDemo() {
-        getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(51.503186, -0.126446), 10));
+        getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(60, 30), 10));
 
         mClusterManager = new ClusterManager<>(this, getMap());
         getMap().setOnCameraIdleListener(mClusterManager);
@@ -157,10 +157,10 @@ public class ClusteringDemoActivity extends BaseDemoActivity {
         mClusterManager.clearItems();
 
         for (Integer item: enumToChecked.keySet()) {
-            if (!enumToChecked.get(item))
+            if (!enumToChecked.get(item) || !enumToJsonName.containsKey(item))
                 continue;
 
-            InputStream inputStream = getResources().openRawResource(item);
+            InputStream inputStream = getResources().openRawResource(enumToJsonName.get(item));
             List<MyItem> items = new MyItemReader().read(inputStream);
             mClusterManager.addItems(items);
         }
