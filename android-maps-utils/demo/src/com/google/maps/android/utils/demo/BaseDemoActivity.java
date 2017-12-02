@@ -43,6 +43,21 @@ public abstract class BaseDemoActivity extends FragmentActivity implements OnMap
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+    }
+
+    @Override
     public void onMapReady(GoogleMap map) {
         if (mMap != null) {
             return;
