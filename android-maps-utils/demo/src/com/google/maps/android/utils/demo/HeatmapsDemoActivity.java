@@ -30,6 +30,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
+import com.google.maps.android.heatmaps.WeightedLatLng;
 import com.google.maps.android.heatmaps.Gradient;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
 
@@ -39,7 +40,9 @@ import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -163,8 +166,8 @@ public class HeatmapsDemoActivity extends BaseDemoActivity {
 
             // Check if need to instantiate (avoid setData etc twice)
             if (mProvider == null) {
-                mProvider = new HeatmapTileProvider.Builder().data(
-                        mLists.get(getString(R.string.police_stations)).getData()).build();
+                mProvider = new HeatmapTileProvider.Builder().weightedData(
+                        getListOnPos(pos)).build();
                 mOverlay = getMap().addTileOverlay(new TileOverlayOptions().tileProvider(mProvider));
                 // Render links
                 attribution.setMovementMethod(LinkMovementMethod.getInstance());
@@ -176,6 +179,11 @@ public class HeatmapsDemoActivity extends BaseDemoActivity {
             attribution.setText(Html.fromHtml(String.format(getString(R.string.attrib_format),
                     mLists.get(dataset).getUrl())));
 
+        }
+
+        public List<WeightedLatLng> getListOnPos(int pos) {
+            return Arrays.asList(new WeightedLatLng(new LatLng(60.0125, 29.7336), 5),
+                    new WeightedLatLng(new LatLng(60, 29.74), 6));
         }
 
         public void onNothingSelected(AdapterView<?> parent) {
