@@ -22,9 +22,13 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.SeekBar;
+
+import android.widget.Toast;
 
 public class MainActivity extends Activity implements View.OnClickListener {
     private ViewGroup mListView;
+
 
     //Comment to see if I can push to the repository
 
@@ -32,10 +36,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-
         mListView = (ViewGroup) findViewById(R.id.list);
-
         addDemo("Heatmaps", HeatmapsDemoActivity.class);
+
+
     }
 
     private void addDemo(String demoName, Class<? extends Activity> activityClass) {

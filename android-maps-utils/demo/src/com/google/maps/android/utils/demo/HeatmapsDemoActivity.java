@@ -22,6 +22,7 @@ import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -48,6 +49,35 @@ import java.util.Scanner;
  * different colors representing areas of high and low concentration/combined intensity of points.
  */
 public class HeatmapsDemoActivity extends BaseDemoActivity {
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        SeekBar simpleSeekBar=(SeekBar)findViewById(R.id.pluhseekBar);
+        // perform seek bar change listener event used for getting the progress value
+        simpleSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            int progressChangedValue = 0;
+
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                progressChangedValue = progress;
+            }
+
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                // TODO Auto-generated method stub
+            }
+
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                mProvider = new HeatmapTileProvider.Builder().data(
+                        mLists.get(getString(R.string.police_stations)).getData()).build();
+                mOverlay = getMap().addTileOverlay(new TileOverlayOptions().tileProvider(mProvider));
+                // Render links
+                TextView attribution = ((TextView) findViewById(R.id.attribution));
+                attribution.setMovementMethod(LinkMovementMethod.getInstance());
+                Toast.makeText(HeatmapsDemoActivity.this, "Seek bar progress is :" + progressChangedValue,
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
     /**
      * Alternative radius for convolution
