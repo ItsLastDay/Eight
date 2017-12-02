@@ -98,7 +98,7 @@ public class HeatmapsDemoActivity extends BaseDemoActivity {
 
     @Override
     protected void startDemo() {
-        getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(-25, 143), 4));
+        getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(60.0119720000000, 29.72), 12));
 
         // Set up the spinner/dropdown list
         Spinner spinner = (Spinner) findViewById(R.id.spinner);
