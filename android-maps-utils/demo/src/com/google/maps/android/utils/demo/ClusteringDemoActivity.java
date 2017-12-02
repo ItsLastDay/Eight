@@ -53,7 +53,7 @@ public class ClusteringDemoActivity extends BaseDemoActivity {
     private static final Map<Integer, String> enumToJsonName = Collections.unmodifiableMap(
             new HashMap<Integer, String>() {
                 {
-                    put(R.id.bicycle_parking, "sport0.json");
+                    put(R.id.bicycle_parking,  "sport0.json");
                     put(R.id.bicycle_rental, "sport1.json");
                     put(R.id.training, "sport2.json");
                     put(R.id.boat_rental, "sport3.json");
