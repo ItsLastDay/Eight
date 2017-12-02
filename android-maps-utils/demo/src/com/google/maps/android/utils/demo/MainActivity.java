@@ -36,6 +36,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         mListView = (ViewGroup) findViewById(R.id.list);
 
         addDemo("Heatmaps", HeatmapsDemoActivity.class);
+        addDemo("Clustering", ClusteringDemoActivity.class);
     }
 
     private void addDemo(String demoName, Class<? extends Activity> activityClass) {

@@ -17,11 +17,13 @@
 package com.google.maps.android.utils.demo;
 
 import android.graphics.Color;
+import android.os.Bundle;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,8 +41,13 @@ import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.stream.Stream;
 
 /**
  * A demo of the Heatmaps library. Demonstrates how the HeatmapTileProvider can be used to create
@@ -48,6 +55,81 @@ import java.util.Scanner;
  * different colors representing areas of high and low concentration/combined intensity of points.
  */
 public class HeatmapsDemoActivity extends BaseDemoActivity {
+
+    private static final Map<Integer, List<Integer>> classes = Collections.unmodifiableMap(
+        new HashMap<Integer, List<Integer>>() {
+            {
+
+                put(R.id.children, Arrays.asList(R.id.arts_centre, R.id.school, R.id.university, R.id.college, R.id.kindergarten, R.id.language_school));
+                put(R.id.women, Arrays.asList(R.id.cinema, R.id.spa, R.id.pharmacy));
+                put(R.id.money, Arrays.asList(R.id.bank, R.id.bureau_de_change, R.id.payment_terminal));
+                put(R.id.sport, Arrays.asList(R.id.bicycle_parking, R.id.bicycle_rental, R.id.training, R.id.boat_rental));
+                put(R.id.pub, Arrays.asList(R.id.pub_small, R.id.cafe, R.id.club, R.id.nightclub));            }
+        }
+    );
+    private static final int totalClasses;
+
+    private Map<Integer, Boolean> enumToChecked = new HashMap<>();
+    private Map<Integer, Integer> enumToIndex = new HashMap<>();
+
+    private void changeCheckedState(Integer enumItem, boolean newVal) {
+        enumToChecked.put(enumItem, newVal);
+        ((CheckBox)findViewById(enumItem)).setChecked(enumToChecked.get(enumItem));
+    }
+
+    private String getCheckedState() {
+        char[] s = new char[totalClasses];
+        for (Integer enumItem: enumToChecked.keySet()) {
+            s[enumToIndex.get(enumItem)] = enumToChecked.get(enumItem) ? '1' : '0';
+        }
+        return new String(s);
+    }
+
+    {
+        for (Integer item: classes.keySet()) {
+            enumToIndex.put(item, enumToIndex.size());
+        }
+        for (List<Integer> item: classes.values()) {
+            for (Integer cls: item) {
+                enumToIndex.put(cls, enumToIndex.size());
+            }
+        }
+
+        for (Integer enumItem: enumToIndex.keySet()) {
+            enumToChecked.put(enumItem, false);
+        }
+    }
+
+    static {
+        int addClasses = 0;
+        for (List<Integer> item: classes.values()) {
+            addClasses += item.size();
+        }
+
+        totalClasses = classes.size() + addClasses;
+    }
+
+    public void onCheckboxClicked(View view) {
+        TextView selection = (TextView) findViewById(R.id.selection);
+        Integer selectedThing = view.getId();
+        boolean newVal = !enumToChecked.get(selectedThing);
+        if (classes.keySet().contains(selectedThing)) {
+            // Superclass: need to modify it and children
+            for (Integer item: classes.get(selectedThing)) {
+                changeCheckedState(item, newVal);
+            }
+        }
+        changeCheckedState(selectedThing, newVal);
+
+        selection.setText(getCheckedState());
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        TextView selection = (TextView) findViewById(R.id.selection);
+        selection.setText(getCheckedState());
+    }
 
     /**
      * Alternative radius for convolution
@@ -101,12 +183,9 @@ public class HeatmapsDemoActivity extends BaseDemoActivity {
         getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(-25, 143), 4));
 
         // Set up the spinner/dropdown list
-        Spinner spinner = (Spinner) findViewById(R.id.spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.heatmaps_datasets_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(new SpinnerActivity());
 
         try {
             mLists.put(getString(R.string.police_stations), new DataSet(readItems(R.raw.police),
@@ -123,67 +202,8 @@ public class HeatmapsDemoActivity extends BaseDemoActivity {
         // radius, gradient and opacity not specified, so default are used
     }
 
-    public void changeRadius(View view) {
-        if (mDefaultRadius) {
-            mProvider.setRadius(ALT_HEATMAP_RADIUS);
-        } else {
-            mProvider.setRadius(HeatmapTileProvider.DEFAULT_RADIUS);
-        }
-        mOverlay.clearTileCache();
-        mDefaultRadius = !mDefaultRadius;
-    }
 
-    public void changeGradient(View view) {
-        if (mDefaultGradient) {
-            mProvider.setGradient(ALT_HEATMAP_GRADIENT);
-        } else {
-            mProvider.setGradient(HeatmapTileProvider.DEFAULT_GRADIENT);
-        }
-        mOverlay.clearTileCache();
-        mDefaultGradient = !mDefaultGradient;
-    }
-
-    public void changeOpacity(View view) {
-        if (mDefaultOpacity) {
-            mProvider.setOpacity(ALT_HEATMAP_OPACITY);
-        } else {
-            mProvider.setOpacity(HeatmapTileProvider.DEFAULT_OPACITY);
-        }
-        mOverlay.clearTileCache();
-        mDefaultOpacity = !mDefaultOpacity;
-    }
-
-    // Dealing with spinner choices
-    public class SpinnerActivity implements AdapterView.OnItemSelectedListener {
-        public void onItemSelected(AdapterView<?> parent, View view,
-                                   int pos, long id) {
-            String dataset = parent.getItemAtPosition(pos).toString();
-
-            TextView attribution = ((TextView) findViewById(R.id.attribution));
-
-            // Check if need to instantiate (avoid setData etc twice)
-            if (mProvider == null) {
-                mProvider = new HeatmapTileProvider.Builder().data(
-                        mLists.get(getString(R.string.police_stations)).getData()).build();
-                mOverlay = getMap().addTileOverlay(new TileOverlayOptions().tileProvider(mProvider));
-                // Render links
-                attribution.setMovementMethod(LinkMovementMethod.getInstance());
-            } else {
-                mProvider.setData(mLists.get(dataset).getData());
-                mOverlay.clearTileCache();
-            }
-            // Update attribution
-            attribution.setText(Html.fromHtml(String.format(getString(R.string.attrib_format),
-                    mLists.get(dataset).getUrl())));
-
-        }
-
-        public void onNothingSelected(AdapterView<?> parent) {
-            // Another interface callback
-        }
-    }
-
-    // Datasets from http://data.gov.au
+        // Datasets from http://data.gov.au
     private ArrayList<LatLng> readItems(int resource) throws JSONException {
         ArrayList<LatLng> list = new ArrayList<LatLng>();
         InputStream inputStream = getResources().openRawResource(resource);

@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="LightThemeSelector" parent="android:style/Theme.Light"></style>
+    <style name="SmallText">
+        <item name="android:textSize">8sp</item>
+    </style>
+    <style name="LargeText">
+        <item name="android:textSize">16sp</item>
+    </style>
 </resources>

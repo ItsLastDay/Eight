@@ -4,7 +4,8 @@ dependencies {
     compile project(':library')
     // Or, fetch from Maven:
     // compile 'com.google.maps.android:android-maps-utils:0.3+'
-    compile 'com.google.android.gms:play-services-maps:9.6.1'
+    compile 'com.google.android.gms:play-services-maps:11.6.2'
+    compile 'com.sothree.slidinguppanel:library:3.4.0'
 }
 
 android {
