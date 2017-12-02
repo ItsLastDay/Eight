@@ -203,7 +203,6 @@ public class HeatmapsDemoActivity extends BaseDemoActivity {
         // radius, gradient and opacity not specified, so default are used
     }
 
-
         // Datasets from http://data.gov.au
     private ArrayList<LatLng> readItems(int resource) throws JSONException {
         ArrayList<LatLng> list = new ArrayList<LatLng>();

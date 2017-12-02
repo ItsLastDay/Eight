@@ -350,4 +350,8 @@
         </LinearLayout>
     </RelativeLayout>
 
+<<<<<<< HEAD
 </com.sothree.slidinguppanel.SlidingUpPanelLayout>
+=======
+</com.sothree.slidinguppanel.SlidingUpPanelLayout>
+>>>>>>> 4816424a8e0718ca00180ea9f4476a7f9be4097e
