@@ -40,6 +40,7 @@
             <ScrollView android:layout_height="match_parent"
                 android:layout_width="match_parent">
 
+<<<<<<< HEAD
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -351,3 +352,26 @@
     </RelativeLayout>
 
 </com.sothree.slidinguppanel.SlidingUpPanelLayout>
+=======
+    <fragment
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:name="com.google.android.gms.maps.SupportMapFragment" />
+
+    <TextView
+        android:id="@+id/attribution"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center" />
+        
+    <SeekBar
+        android:id="@+id/seekBar"
+        style=""
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="10"
+        android:progress="3" />
+</LinearLayout>
+>>>>>>> b77b87bcc2beefa43a2e846ca686842fbf6ac5df
