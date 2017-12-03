@@ -20,7 +20,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         mListView = (ViewGroup) findViewById(R.id.list);
 
         addDemo("Find Path", MapsActivity.class);
-        addDemo("Analise", ClusteringDemoActivity.class);
+        addDemo("Analyze", ClusteringDemoActivity.class);
     }
 
     private void addDemo(String demoName, Class<? extends Activity> activityClass) {

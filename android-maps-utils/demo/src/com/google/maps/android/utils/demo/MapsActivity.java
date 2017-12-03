@@ -3,7 +3,6 @@ package com.google.maps.android.utils.demo;
 import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -24,48 +23,19 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.maps.model.TileOverlay;
+import com.google.android.gms.maps.model.TileOverlayOptions;
+import com.google.maps.android.heatmaps.HeatmapTileProvider;
+import com.google.maps.android.utils.demo.model.DirectionFinder;
+import com.google.maps.android.utils.demo.model.DirectionFinderListener;
+import com.google.maps.android.utils.demo.model.GradientUtils;
+import com.google.maps.android.utils.demo.model.Route;
 
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
-
-import com.google.android.gms.maps.model.TileOverlay;
-import com.google.android.gms.maps.model.TileOverlayOptions;
-import com.google.maps.android.heatmaps.Gradient;
-import com.google.maps.android.heatmaps.HeatmapTileProvider;
-import com.google.maps.android.heatmaps.WeightedLatLng;
-import com.google.maps.android.utils.demo.model.DirectionFinder;
-import com.google.maps.android.utils.demo.model.DirectionFinderListener;
-import com.google.maps.android.utils.demo.model.Route;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, DirectionFinderListener {
-
-    private static final int ALT_HEATMAP_RADIUS = 20;
-
-    private static final double ALT_HEATMAP_OPACITY = 70;
-
-    private static final int[] ALT_HEATMAP_GRADIENT_COLORS = {
-            Color.argb(0, 0, 255, 255),// transparent
-            Color.argb(255 / 3 * 2, 0, 255, 255),
-            Color.rgb(0, 191, 255),
-            Color.rgb(0, 0, 127),
-            Color.rgb(255, 0, 0)
-    };
-
-    public static final float[] ALT_HEATMAP_GRADIENT_START_POINTS = {
-            0.0f, 0.10f, 0.20f, 0.60f, 1.0f
-    };
-
-
-    public static final Gradient ALT_HEATMAP_GRADIENT = new Gradient(ALT_HEATMAP_GRADIENT_COLORS,
-            ALT_HEATMAP_GRADIENT_START_POINTS);
-
     private HeatmapTileProvider mProvider;
     private TileOverlay mOverlay;
 
@@ -101,41 +71,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
     }
 
-    public void startDemo() {
-        try {
-            mProvider = new HeatmapTileProvider.Builder().weightedData(
-                    getListOnPos(5)).build();
-            mProvider.setRadius(ALT_HEATMAP_RADIUS);
-            mProvider.setOpacity(ALT_HEATMAP_OPACITY);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider));
-    }
-
-    List<WeightedLatLng> getListOnPos(int pos) throws JSONException {
-        ArrayList<WeightedLatLng> list = new ArrayList<>();
-        String file = "d201" + Integer.toString(pos);
-        Resources res = getResources();
-        try {
-            int sourceId = res.getIdentifier(file, "raw", getPackageName());
-            InputStream inputStream = getResources().openRawResource(sourceId);
-            String json = new Scanner(inputStream).useDelimiter("\\A").next();
-            JSONArray array = new JSONArray(json);
-            for (int i = 0; i < array.length(); i++) {
-                JSONObject object = array.getJSONObject(i);
-                double lat = object.getDouble("lat");
-                double lng = object.getDouble("lng");
-                double weight = object.getDouble("weight");
-                list.add(new WeightedLatLng(new LatLng(lat, lng), weight));
-            }
-            return list;
-        } catch (Resources.NotFoundException err) {
-            System.out.println(file);
-            return null;
-        }
-    }
-
     private void sendRequest() {
         String origin = etOrigin.getText().toString();
         String destination = etDestination.getText().toString();
@@ -160,14 +95,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(59.9343, 30.3351), 9));
 
-        try {
-            mProvider = new HeatmapTileProvider.Builder().weightedData(
-                    getListOnPos(7)).build();
-            mProvider.setRadius(ALT_HEATMAP_RADIUS);
-            mProvider.setOpacity(ALT_HEATMAP_OPACITY);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+
+        mProvider = GradientUtils.makeProvider(7, getResources(), getPackageName());
         mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider));
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
