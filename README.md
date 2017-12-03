@@ -6,6 +6,9 @@ We participated in the first Data Science hackathon held by EPAM in Saint-Peters
 
 Our prototype is based on [https://github.com/googlemaps/android-maps-utils](https://github.com/googlemaps/android-maps-utils).
 
+## Video-demonstration (click to play)
+[![EIGHT video demonstration](https://img.youtube.com/vi/l-iyOyqC85Q/0.jpg)](https://youtu.be/l-iyOyqC85Q)
+
 ## The product
 Our product allows user to:
 - observe criminality of districts of Saint-Petersburg;
