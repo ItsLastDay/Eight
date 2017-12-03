@@ -4,6 +4,8 @@ EIGHT = EPAM impressive google HeaTmap.
 
 We participated in the first Data Science hackathon held by EPAM in Saint-Petersburg.
 
+Our prototype is based on [https://github.com/googlemaps/android-maps-utils](https://github.com/googlemaps/android-maps-utils).
+
 ## The product
 Our product allows user to:
 - observe criminality of districts of Saint-Petersburg;
