@@ -15,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="9"
-        android:max="7"
+        android:max="9"
         android:progress="0" />
     <EditText
         android:layout_width="match_parent"
