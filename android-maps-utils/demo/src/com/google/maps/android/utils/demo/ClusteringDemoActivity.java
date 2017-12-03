@@ -16,29 +16,65 @@
 
 package com.google.maps.android.utils.demo;
 
+import android.content.res.Resources;
+import android.graphics.Color;
+import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.TileOverlay;
+import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.maps.android.clustering.ClusterManager;
+import com.google.maps.android.heatmaps.Gradient;
+import com.google.maps.android.heatmaps.HeatmapTileProvider;
+import com.google.maps.android.heatmaps.WeightedLatLng;
 import com.google.maps.android.utils.demo.model.MyItem;
 
+import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 /**
  * Simple activity demonstrating ClusterManager.
  */
 public class ClusteringDemoActivity extends BaseDemoActivity {
+    private static final int ALT_HEATMAP_RADIUS = 40;
+
+    private static final double ALT_HEATMAP_OPACITY = 100;
+
+    private static final int[] ALT_HEATMAP_GRADIENT_COLORS = {
+            Color.argb(0, 0, 255, 255),// transparent
+            Color.argb(255 / 3 * 2, 0, 255, 255),
+            Color.rgb(0, 191, 255),
+            Color.rgb(0, 0, 127),
+            Color.rgb(255, 0, 0)
+    };
+
+    public static final float[] ALT_HEATMAP_GRADIENT_START_POINTS = {
+            0.0f, 0.10f, 0.20f, 0.60f, 1.0f
+    };
+
+
+    public static final Gradient ALT_HEATMAP_GRADIENT = new Gradient(ALT_HEATMAP_GRADIENT_COLORS,
+            ALT_HEATMAP_GRADIENT_START_POINTS);
+
+    private HeatmapTileProvider mProvider;
+    private TileOverlay mOverlay;
+
 
     private static final Map<Integer, List<Integer>> classes = Collections.unmodifiableMap(
             new HashMap<Integer, List<Integer>>() {
@@ -131,11 +167,8 @@ public class ClusteringDemoActivity extends BaseDemoActivity {
 
         //selection.setText(getCheckedState());
 
-        try {
-            changeClusters();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        changeClusters();
+
     }
 
     private ClusterManager<MyItem> mClusterManager;
@@ -147,13 +180,84 @@ public class ClusteringDemoActivity extends BaseDemoActivity {
 
     @Override
     protected void startDemo() {
-        getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(60, 30), 10));
+        getMap().moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(59.9343, 30.3351), 12));
+        SeekBar simpleSeekBar=(SeekBar)findViewById(R.id.seekBar);
+        // perform seek bar change listener event used for getting the progress value
 
+        simpleSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            int progressChangedValue = 0;
+            {
+                try {
+                    mProvider = new HeatmapTileProvider.Builder().weightedData(
+                            getListOnPos(progressChangedValue)).build();
+                    mProvider.setRadius(ALT_HEATMAP_RADIUS);
+                    mProvider.setOpacity(ALT_HEATMAP_OPACITY);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                mOverlay = getMap().addTileOverlay(new TileOverlayOptions().tileProvider(mProvider));
+                changeClusters();
+            }
+
+
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                progressChangedValue = progress;
+            }
+
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                // TODO Auto-generated method stub
+            }
+
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                try {
+                    mProvider = new HeatmapTileProvider.Builder().weightedData(
+                            getListOnPos(progressChangedValue)).build();
+                    mProvider.setRadius(ALT_HEATMAP_RADIUS);
+                    mProvider.setOpacity(ALT_HEATMAP_OPACITY);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                if (getMap() != null) {
+                    getMap().clear();
+                }
+                changeClusters();
+                mOverlay = getMap().addTileOverlay(new TileOverlayOptions().tileProvider(mProvider));
+
+
+
+                Toast.makeText(ClusteringDemoActivity.this, "Seek bar progress is :" + progressChangedValue,
+                        Toast.LENGTH_SHORT).show();
+            }
+
+            List<WeightedLatLng> getListOnPos(int pos) throws JSONException {
+                ArrayList<WeightedLatLng> list = new ArrayList<>();
+                String file = "d201" + Integer.toString(pos);
+                Resources res = getResources();
+                try {
+                    int sourceId = res.getIdentifier(file, "raw", getPackageName());
+                    InputStream inputStream = getResources().openRawResource(sourceId);
+                    String json = new Scanner(inputStream).useDelimiter("\\A").next();
+                    JSONArray array = new JSONArray(json);
+                    for (int i = 0; i < array.length(); i++) {
+                        JSONObject object = array.getJSONObject(i);
+                        double lat = object.getDouble("lat");
+                        double lng = object.getDouble("lng");
+                        double weight = object.getDouble("weight");
+                        list.add(new WeightedLatLng(new LatLng(lat, lng), weight));
+                    }
+                    return list;
+                } catch (Resources.NotFoundException err) {
+                    System.out.println(file);
+                    return null;
+                }
+            }
+        });
         mClusterManager = new ClusterManager<>(this, getMap());
         getMap().setOnCameraIdleListener(mClusterManager);
     }
 
-    private void changeClusters() throws JSONException {
+    private void changeClusters() {
         mClusterManager.clearItems();
 
         for (Integer item: enumToChecked.keySet()) {
@@ -161,7 +265,12 @@ public class ClusteringDemoActivity extends BaseDemoActivity {
                 continue;
 
             InputStream inputStream = getResources().openRawResource(enumToJsonName.get(item));
-            List<MyItem> items = new MyItemReader().read(inputStream);
+            List<MyItem> items = null;
+            try {
+                items = new MyItemReader().read(inputStream);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
             mClusterManager.addItems(items);
         }
     }

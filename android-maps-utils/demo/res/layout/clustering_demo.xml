@@ -9,16 +9,30 @@
     app:umanoShadowHeight="10dp"
     android:gravity="bottom">
 
-
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <fragment
-            android:id="@+id/map"
+        android:layout_height="match_parent"
+        android:layout_weight="10">
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:name="com.google.android.gms.maps.SupportMapFragment" />
+            android:orientation="vertical">
+            <SeekBar
+                android:id="@+id/seekBar"
+                style=""
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="9"
+                android:max="7"
+                android:progress="0" />
+
+            <fragment
+                android:id="@+id/map"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:name="com.google.android.gms.maps.SupportMapFragment" />
+        </LinearLayout>
     </RelativeLayout>
 
 
