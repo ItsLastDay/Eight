@@ -44,8 +44,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".HeatmapsDemoActivity"/>
         <activity android:name=".ClusteringDemoActivity"/>
+        <activity android:name=".MapsActivity"/>
 
     </application>
 
